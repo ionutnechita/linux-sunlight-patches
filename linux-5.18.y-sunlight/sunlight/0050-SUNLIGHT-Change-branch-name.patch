@@ -1,0 +1,26 @@
+From 0caf2a6870e80a564d8d03f5bd0df3e0617e4aa1 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sun, 8 May 2022 14:35:37 +0300
+Subject: [PATCH 50/52] SUNLIGHT: Change branch name
+
+Description:
+ - 5.18
+
+Bug: N/A
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Change-Id: I9d0d345a2b18040a4f4db9238fcd0e3562fb1998
+---
+ build.config.constants | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build.config.constants b/build.config.constants
+index b764891cca57..8ef8dcce17f9 100644
+--- a/build.config.constants
++++ b/build.config.constants
+@@ -1,2 +1,2 @@
+-BRANCH=android-mainline
++BRANCH=5.18
+ CLANG_VERSION=r450784e
+-- 
+2.35.1
+

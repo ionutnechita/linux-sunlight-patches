@@ -1,0 +1,40 @@
+From 5dd9728447379e6ed44cd90c5b9784118ca31b91 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sat, 23 Apr 2022 20:12:12 +0300
+Subject: [PATCH 48/52] SUNLIGHT: Updated lowlatency config
+
+Description:
+ - Updated kernel config file:
+   config-sunlight-lowlatency
+
+Bug: N/A
+Change-Id: I72fd71c2e3233c4fd560173bde4b845c6293cee3
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ sunlight/gcc/config-sunlight-lowlatency | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/sunlight/gcc/config-sunlight-lowlatency b/sunlight/gcc/config-sunlight-lowlatency
+index ac0cb30accbb..8155c1f27eb8 100644
+--- a/sunlight/gcc/config-sunlight-lowlatency
++++ b/sunlight/gcc/config-sunlight-lowlatency
+@@ -2,7 +2,7 @@
+ # Automatically generated file; DO NOT EDIT.
+ # Linux/x86_64 5.18.0-viva3 Kernel Configuration
+ #
+-CONFIG_CC_VERSION_TEXT="gcc (Ubuntu 11.2.0-19ubuntu1) 11.2.0"
++CONFIG_CC_VERSION_TEXT="gcc (Debian 11.2.0-20) 11.2.0"
+ CONFIG_CC_IS_GCC=y
+ CONFIG_GCC_VERSION=110200
+ CONFIG_CLANG_VERSION=0
+@@ -1268,6 +1268,7 @@ CONFIG_TCP_CONG_ILLINOIS=m
+ CONFIG_TCP_CONG_DCTCP=m
+ CONFIG_TCP_CONG_CDG=m
+ CONFIG_TCP_CONG_BBR=m
++# CONFIG_TCP_CONG_BBR2 is not set
+ CONFIG_DEFAULT_CUBIC=y
+ # CONFIG_DEFAULT_RENO is not set
+ CONFIG_DEFAULT_TCP_CONG="cubic"
+-- 
+2.35.1
+

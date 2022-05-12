@@ -1,0 +1,48 @@
+From b51e9f8bd550b91820b69c3b170c4e09b56ee074 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sun, 10 Apr 2022 19:19:35 +0300
+Subject: [PATCH 01/52] SUNLIGHT: Make mkcompile_h accept an alternate
+ timestamp string
+
+Description:
+ - We want to include the Debian version in the utsname::version string
+   instead of a full timestamp string. However, we still need to provide
+   a standard timestamp string for gen_initramfs_list.sh to make the
+   kernel image reproducible.
+ - Make mkcompile_h use $KBUILD_BUILD_VERSION_TIMESTAMP in preference to
+   $KBUILD_BUILD_TIMESTAMP.
+
+Bug: N/A
+Change-Id: I4953db55a8b0456fda2bb9550a143eee786276c0
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Signed-off-by: Fabian Gruenbichler <f.gruenbichler@proxmox.com>
+Signed-off-by: Thomas Lamprecht <t.lamprecht@proxmox.com>
+---
+ scripts/mkcompile_h | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/scripts/mkcompile_h b/scripts/mkcompile_h
+index ca40a5258c87..6ae930a732f0 100755
+--- a/scripts/mkcompile_h
++++ b/scripts/mkcompile_h
+@@ -23,10 +23,14 @@ else
+ 	VERSION=$KBUILD_BUILD_VERSION
+ fi
+ 
+-if [ -z "$KBUILD_BUILD_TIMESTAMP" ]; then
+-	TIMESTAMP=`date`
++if [ -z "$KBUILD_BUILD_VERSION_TIMESTAMP" ]; then
++	if [ -z "$KBUILD_BUILD_TIMESTAMP" ]; then
++		TIMESTAMP=`date`
++	else
++		TIMESTAMP=$KBUILD_BUILD_TIMESTAMP
++	fi
+ else
+-	TIMESTAMP=$KBUILD_BUILD_TIMESTAMP
++	TIMESTAMP=$KBUILD_BUILD_VERSION_TIMESTAMP
+ fi
+ if test -z "$KBUILD_BUILD_USER"; then
+ 	LINUX_COMPILE_BY=$(whoami | sed 's/\\/\\\\/')
+-- 
+2.35.1
+

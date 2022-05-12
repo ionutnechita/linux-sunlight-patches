@@ -1,0 +1,89 @@
+From 0a8de5cc8b3ed9cb077ec3ee79b61658050b1d1b Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sat, 2 Apr 2022 17:07:55 +0300
+Subject: [PATCH 03/52] SUNLIGHT: Minor fix loglevel used in code
+
+Description:
+ - Module:
+   acpica, hid/hid-asus,
+   mt7921, watchdog/sp5100_tco
+
+Bug: N/A
+Change-Id: Icc68baf9f79d302d8b63038e5ecad5500264a898
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ drivers/acpi/acpica/psobject.c                  | 2 +-
+ drivers/acpi/acpica/uterror.c                   | 2 +-
+ drivers/hid/hid-asus.c                          | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 2 +-
+ drivers/watchdog/sp5100_tco.c                   | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/acpi/acpica/psobject.c b/drivers/acpi/acpica/psobject.c
+index e4420cd6d281..d1ca17a1886a 100644
+--- a/drivers/acpi/acpica/psobject.c
++++ b/drivers/acpi/acpica/psobject.c
+@@ -216,7 +216,7 @@ acpi_ps_build_named_op(struct acpi_walk_state *walk_state,
+ 
+ 	status = walk_state->descending_callback(walk_state, op);
+ 	if (ACPI_FAILURE(status)) {
+-		if (status != AE_CTRL_TERMINATE) {
++		if ((status != AE_CTRL_TERMINATE) && (status != AE_ALREADY_EXISTS)) {
+ 			ACPI_EXCEPTION((AE_INFO, status,
+ 					"During name lookup/catalog"));
+ 		}
+diff --git a/drivers/acpi/acpica/uterror.c b/drivers/acpi/acpica/uterror.c
+index 918aca7c4db4..97fd26a4155f 100644
+--- a/drivers/acpi/acpica/uterror.c
++++ b/drivers/acpi/acpica/uterror.c
+@@ -182,7 +182,7 @@ acpi_ut_prefixed_namespace_error(const char *module_name,
+ 	switch (lookup_status) {
+ 	case AE_ALREADY_EXISTS:
+ 
+-		acpi_os_printf(ACPI_MSG_BIOS_ERROR);
++		acpi_os_printf(ACPI_MSG_WARNING);
+ 		message = "Failure creating named object";
+ 		break;
+ 
+diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+index 08c9a9a60ae4..25b6a7e396c3 100644
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -1095,7 +1095,7 @@ static int asus_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 	}
+ 
+ 	if (!drvdata->input) {
+-		hid_err(hdev, "Asus input not registered\n");
++		hid_warn(hdev, "Asus input not registered\n");
+ 		ret = -ENOMEM;
+ 		goto err_stop_hw;
+ 	}
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index 1a01d025bbe5..0311a50b04b8 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -316,7 +316,7 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
+ 
+ 	mdev->rev = (mt7921_l1_rr(dev, MT_HW_CHIPID) << 16) |
+ 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
+-	dev_info(mdev->dev, "ASIC revision: %04x\n", mdev->rev);
++	dev_dbg(mdev->dev, "ASIC revision: %04x\n", mdev->rev);
+ 
+ 	mt76_wr(dev, MT_WFDMA0_HOST_INT_ENA, 0);
+ 
+diff --git a/drivers/watchdog/sp5100_tco.c b/drivers/watchdog/sp5100_tco.c
+index 86ffb58fbc85..8c55420e02c5 100644
+--- a/drivers/watchdog/sp5100_tco.c
++++ b/drivers/watchdog/sp5100_tco.c
+@@ -286,7 +286,7 @@ static int sp5100_tco_timer_init(struct sp5100_tco *tco)
+ 
+ 	val = readl(SP5100_WDT_CONTROL(tco->tcobase));
+ 	if (val & SP5100_WDT_DISABLED) {
+-		dev_err(dev, "Watchdog hardware is disabled\n");
++		dev_warn(dev, "Watchdog hardware is disabled\n");
+ 		return -ENODEV;
+ 	}
+ 
+-- 
+2.35.1
+

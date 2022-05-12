@@ -1,0 +1,128 @@
+From f91668cc5d5b87d95a4ac8928bb270c11f4efdb3 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Wed, 30 Mar 2022 08:48:08 +0300
+Subject: [PATCH 22/52] SUNLIGHT: SCHED: BORE - CPU scheduler v5.18
+
+Description:
+ - Review: SCHED: BORE - CPU scheduler v5.18
+   BORE(Burst-Oriented Response Enhancer)
+   1.2.28.0
+
+Bug: N/A
+Change-Id: I6310b058c81ab97cca9f1938aa7e21a6f0c4b403
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ kernel/sched/core.c  | 10 +++++++---
+ kernel/sched/debug.c |  3 ++-
+ kernel/sched/fair.c  | 10 +++++-----
+ kernel/sched/sched.h |  3 ++-
+ 4 files changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index b410d45c9581..dbd932afd934 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -113,6 +113,10 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_switch);
+ DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
+ EXPORT_SYMBOL_GPL(runqueues);
+ 
++#ifdef CONFIG_SCHED_BORE
++unsigned char  __read_mostly sysctl_sched_burst_reduction_bits_fork = 0;
++#endif // CONFIG_SCHED_BORE
++
+ #ifdef CONFIG_SCHED_DEBUG
+ /*
+  * Debugging: various feature bits
+@@ -4365,7 +4369,7 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
+ 	p->se.nr_migrations		= 0;
+ 	p->se.vruntime			= 0;
+ #ifdef CONFIG_SCHED_BORE
+-	p->se.burst_time			= 0;
++	p->se.burst_time		>>= sysctl_sched_burst_reduction_bits_fork;
+ #endif // CONFIG_SCHED_BORE
+ 	INIT_LIST_HEAD(&p->se.group_node);
+ 
+@@ -9543,8 +9547,8 @@ void __init sched_init(void)
+ #endif
+ 
+ #ifdef CONFIG_SCHED_BORE
+-	printk(KERN_INFO "BORE (Burst-Oriented Response Enhancer) CPU Scheduler modification 1.2.27.0 by Masahito Suzuki");
+-	printk(KERN_INFO "BORE (Burst-Oriented Response Enhancer) CPU Scheduler aligned 1.2.27.0 by Ionut Nechita");
++	printk(KERN_INFO "BORE (Burst-Oriented Response Enhancer) CPU Scheduler modification 1.2.28.0 by Masahito Suzuki");
++	printk(KERN_INFO "BORE (Burst-Oriented Response Enhancer) CPU Scheduler aligned 1.2.28.0 by Ionut Nechita");
+ #endif // CONFIG_SCHED_BORE
+ 
+ 	wait_bit_init();
+diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
+index 0ac388ca4c37..a9d6924e0b19 100644
+--- a/kernel/sched/debug.c
++++ b/kernel/sched/debug.c
+@@ -319,7 +319,8 @@ static __init int sched_init_debug(void)
+ 	debugfs_create_u32("latency_warn_once", 0644, debugfs_sched, &sysctl_resched_latency_warn_once);
+ #ifdef CONFIG_SCHED_BORE
+ 	debugfs_create_u16("burst_penalty_scale", 0644, debugfs_sched, &sysctl_sched_burst_penalty_scale);
+-	debugfs_create_u8("burst_reduction_bits", 0644, debugfs_sched, &sysctl_sched_burst_reduction_bits);
++	debugfs_create_u8("burst_reduction_bits_deq", 0644, debugfs_sched, &sysctl_sched_burst_reduction_bits_deq);
++	debugfs_create_u8("burst_reduction_bits_fork", 0644, debugfs_sched, &sysctl_sched_burst_reduction_bits_fork);
+ #endif // CONFIG_SCHED_BORE
+ 
+ #ifdef CONFIG_SMP
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 50f75e9b1e47..e62770e046a9 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -131,8 +131,8 @@ static unsigned int normalized_sysctl_sched_wakeup_granularity	= 1000000UL;
+ const_debug unsigned int sysctl_sched_migration_cost	= 500000UL;
+ 
+ #ifdef CONFIG_SCHED_BORE
+-	unsigned short sysctl_sched_burst_penalty_scale = 1176;
+-	unsigned char  sysctl_sched_burst_reduction_bits = 6;
++unsigned short __read_mostly sysctl_sched_burst_penalty_scale = 1176;
++unsigned char  __read_mostly sysctl_sched_burst_reduction_bits_deq = 3;
+ #endif // CONFIG_SCHED_BORE
+ 
+ int sched_thermal_decay_shift;
+@@ -926,7 +926,7 @@ static void update_curr(struct cfs_rq *cfs_rq)
+ 		  ? logbt : 1))) >> 54)) * sysctl_sched_burst_penalty_scale) >> 20;
+ 		curr->vruntime += mul_u64_u32_shr(
+ 			calc_delta_fair(delta_exec, curr),
+-			sched_prio_to_wmult[min(burst_score, 39)], 22);
++			sched_prio_to_wmult[min(burst_score, (u32)39)], 22);
+ 	}
+ 	else
+ #endif // CONFIG_SCHED_BORE
+@@ -5826,7 +5826,7 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
+ 		cfs_rq = cfs_rq_of(se);
+ 		dequeue_entity(cfs_rq, se, flags);
+ #ifdef CONFIG_SCHED_BORE
+-		se->burst_time >>= sysctl_sched_burst_reduction_bits;
++		se->burst_time >>= sysctl_sched_burst_reduction_bits_deq;
+ #endif // CONFIG_SCHED_BORE
+ 
+ 		cfs_rq->h_nr_running--;
+@@ -7538,7 +7538,7 @@ static void yield_task_fair(struct rq *rq)
+ 	struct cfs_rq *cfs_rq = task_cfs_rq(curr);
+ 	struct sched_entity *se = &curr->se;
+ #ifdef CONFIG_SCHED_BORE
+-	se->burst_time >>= sysctl_sched_burst_reduction_bits;
++	se->burst_time >>= sysctl_sched_burst_reduction_bits_deq;
+ #endif // CONFIG_SCHED_BORE
+ 
+ 	/*
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index d47bb413d26f..6d2519ce1adf 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -2414,7 +2414,8 @@ extern int sysctl_resched_latency_warn_ms;
+ extern int sysctl_resched_latency_warn_once;
+ #ifdef CONFIG_SCHED_BORE
+ extern unsigned short sysctl_sched_burst_penalty_scale;
+-extern unsigned char sysctl_sched_burst_reduction_bits;
++extern unsigned char sysctl_sched_burst_reduction_bits_deq;
++extern unsigned char sysctl_sched_burst_reduction_bits_fork;
+ #endif // CONFIG_SCHED_BORE
+ 
+ extern unsigned int sysctl_sched_tunable_scaling;
+-- 
+2.35.1
+

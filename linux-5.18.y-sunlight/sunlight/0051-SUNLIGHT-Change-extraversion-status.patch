@@ -1,0 +1,32 @@
+From 3beff81642826ecfb96f1be7c9a8531cc0cde003 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sun, 8 May 2022 14:37:21 +0300
+Subject: [PATCH 51/52] SUNLIGHT: Change extraversion status
+
+Description:
+ - rc is development status
+   and viva is staging status
+
+Bug: N/A
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Change-Id: I367be5f375fde95f02c49cd4c9aff757a2c8a6af
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 1b58275f35c5..372ade45e6f5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@
+ VERSION = 5
+ PATCHLEVEL = 18
+ SUBLEVEL = 0
+-EXTRAVERSION = -rc6
++EXTRAVERSION = -viva6
+ NAME = Superb Owl
+ 
+ # *DOCUMENTATION*
+-- 
+2.35.1
+

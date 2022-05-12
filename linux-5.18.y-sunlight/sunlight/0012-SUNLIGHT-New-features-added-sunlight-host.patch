@@ -1,0 +1,277 @@
+From 864e9cacdb2ad94c8f33a0a0a4e89d59191df0fe Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Mon, 27 Dec 2021 17:46:49 +0000
+Subject: [PATCH 12/52] SUNLIGHT: New features added - sunlight-host.
+
+Description:
+ - New: Sunlight Host driver
+ - Review: Sunlight headers in Makefile
+
+Bug: N/A
+Change-Id: Ica019362841fc32e0e8a68e85e16e64a75fe5def
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ Kconfig                                |  2 +
+ Makefile                               | 14 +++++-
+ sunlight/Kconfig                       | 24 +++++++++
+ sunlight/Makefile                      | 30 +++++++++++
+ sunlight/include/Kbuild                |  2 +
+ sunlight/include/README                |  4 ++
+ sunlight/sunlight-host/Kconfig         |  5 ++
+ sunlight/sunlight-host/Makefile        |  1 +
+ sunlight/sunlight-host/sunlight-host.c | 70 ++++++++++++++++++++++++++
+ 9 files changed, 151 insertions(+), 1 deletion(-)
+ create mode 100644 sunlight/Kconfig
+ create mode 100644 sunlight/Makefile
+ create mode 100644 sunlight/include/Kbuild
+ create mode 100644 sunlight/include/README
+ create mode 100644 sunlight/sunlight-host/Kconfig
+ create mode 100644 sunlight/sunlight-host/Makefile
+ create mode 100644 sunlight/sunlight-host/sunlight-host.c
+
+diff --git a/Kconfig b/Kconfig
+index 57a142d8d8b4..831ed40cf825 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -19,6 +19,8 @@ source "net/Kconfig"
+ 
+ source "drivers/Kconfig"
+ 
++source "sunlight/Kconfig"
++
+ source "fs/Kconfig"
+ 
+ source "security/Kconfig"
+diff --git a/Makefile b/Makefile
+index df633ad893d3..0848d956eaec 100644
+--- a/Makefile
++++ b/Makefile
+@@ -518,6 +518,13 @@ CFLAGS_KERNEL	=
+ AFLAGS_KERNEL	=
+ LDFLAGS_vmlinux =
+ 
++# Prefer linux-backports-modules
++ifneq ($(KBUILD_SRC),)
++ifneq ($(shell if test -e $(KBUILD_OUTPUT)/sunlight-build; then echo yes; fi),yes)
++SUNLIGHTINCLUDE := -I/usr/src/linux-headers-lbm-$(KERNELRELEASE)
++endif
++endif
++
+ # Use USERINCLUDE when you must reference the UAPI directories only.
+ USERINCLUDE    := \
+ 		-I$(srctree)/arch/$(SRCARCH)/include/uapi \
+@@ -530,12 +537,16 @@ USERINCLUDE    := \
+ # Use LINUXINCLUDE when you must reference the include/ directory.
+ # Needed to be compatible with the O= option
+ LINUXINCLUDE    := \
++		$(SUNLIGHTINCLUDE) \
+ 		-I$(srctree)/arch/$(SRCARCH)/include \
+ 		-I$(objtree)/arch/$(SRCARCH)/include/generated \
+ 		$(if $(building_out_of_srctree),-I$(srctree)/include) \
+ 		-I$(objtree)/include \
+ 		$(USERINCLUDE)
+ 
++# SUNLIGHT: Include our third party driver stuff too
++LINUXINCLUDE   += -Isunlight/include $(if $(KBUILD_SRC),-I$(srctree)/sunlight/include)
++
+ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+ KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
+@@ -691,7 +702,7 @@ endif
+ ifeq ($(KBUILD_EXTMOD),)
+ # Objects we will link into vmlinux / subdirs we need to visit
+ core-y		:= init/ usr/ arch/$(SRCARCH)/
+-drivers-y	:= drivers/ sound/
++drivers-y	:= drivers/ sound/ sunlight/
+ drivers-$(CONFIG_SAMPLES) += samples/
+ drivers-$(CONFIG_NET) += net/
+ drivers-y	+= virt/
+@@ -1148,6 +1159,7 @@ ifeq ($(KBUILD_EXTMOD),)
+ endif
+ 	$(Q)$(MAKE) $(hdr-inst)=$(hdr-prefix)include/uapi
+ 	$(Q)$(MAKE) $(hdr-inst)=$(hdr-prefix)arch/$(SRCARCH)/include/uapi
++	$(Q)$(MAKE) $(hdr-inst)=sunlight/include dst=include oldheaders=
+ 
+ ifeq ($(KBUILD_EXTMOD),)
+ core-y			+= kernel/ certs/ mm/ fs/ ipc/ security/ crypto/
+diff --git a/sunlight/Kconfig b/sunlight/Kconfig
+new file mode 100644
+index 000000000000..9b8003b48a5d
+--- /dev/null
++++ b/sunlight/Kconfig
+@@ -0,0 +1,24 @@
++menu "Sunlight Supplied Third-Party Device Drivers"
++
++#
++# NOTE: to allow drivers to be added and removed without causing merge
++# collisions you should add new entries in the middle of the six lines
++# of ## at the bottom of the list. Always add three lines of ## above
++# your new entry and maintain the six lines below.
++#
++
++##
++##
++##
++##
++##
++##
++source "sunlight/sunlight-host/Kconfig"
++##
++##
++##
++##
++##
++##
++
++endmenu
+diff --git a/sunlight/Makefile b/sunlight/Makefile
+new file mode 100644
+index 000000000000..23044b650983
+--- /dev/null
++++ b/sunlight/Makefile
+@@ -0,0 +1,30 @@
++#
++# Makefile for the Linux kernel sunlight supplied third-party device drivers.
++#
++
++#
++# NOTE: to allow drivers to be added and removed without causing merge
++# collisions you should add new entries in the middle of the six lines
++# of ## at the bottom of the list.  Always add three lines of ## above
++# your new entry and maintain the six lines below.
++#
++
++##
++##
++##
++##
++##
++##
++##
++##
++##
++obj-$(CONFIG_SUNLIGHT_HOST)      += sunlight-host/
++##
++##
++##
++##
++##
++##
++
++# This is a stupid trick to get kbuild to create sunlight/built-in.o
++obj- += foo.o
+diff --git a/sunlight/include/Kbuild b/sunlight/include/Kbuild
+new file mode 100644
+index 000000000000..139597f9cb07
+--- /dev/null
++++ b/sunlight/include/Kbuild
+@@ -0,0 +1,2 @@
++
++
+diff --git a/sunlight/include/README b/sunlight/include/README
+new file mode 100644
+index 000000000000..a6adb0f659b7
+--- /dev/null
++++ b/sunlight/include/README
+@@ -0,0 +1,4 @@
++Only use this directory for things which need to share their headers with
++other parts of the kernel or other modules in sunlight/
++
++Otherwise, keep them local to the module directory.
+diff --git a/sunlight/sunlight-host/Kconfig b/sunlight/sunlight-host/Kconfig
+new file mode 100644
+index 000000000000..a102e51d4a11
+--- /dev/null
++++ b/sunlight/sunlight-host/Kconfig
+@@ -0,0 +1,5 @@
++config SUNLIGHT_HOST
++	tristate "proc dir for exporting host data to containers"
++	help
++	  Creates an sunlight-host directory in proc for providing data from
++	  Sunlight hosts to containers.
+diff --git a/sunlight/sunlight-host/Makefile b/sunlight/sunlight-host/Makefile
+new file mode 100644
+index 000000000000..21247c23c0fc
+--- /dev/null
++++ b/sunlight/sunlight-host/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_SUNLIGHT_HOST) += sunlight-host.o
+diff --git a/sunlight/sunlight-host/sunlight-host.c b/sunlight/sunlight-host/sunlight-host.c
+new file mode 100644
+index 000000000000..69e7e5c1c389
+--- /dev/null
++++ b/sunlight/sunlight-host/sunlight-host.c
+@@ -0,0 +1,70 @@
++#include <linux/uaccess.h>
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/proc_fs.h>
++#include <asm/uaccess.h>
++
++#define PROC_DIR		"sunlight-host"
++
++#define ESM_TOKEN_FILE		"esm-token"
++#define ESM_TOKEN_MAX_SIZE		64
++
++static struct proc_dir_entry *proc_dir;
++static char esm_token_buffer[ESM_TOKEN_MAX_SIZE];
++
++static ssize_t esm_token_read(struct file *f, char __user *buf, size_t len,
++			      loff_t *off)
++{
++	return simple_read_from_buffer(buf, len, off, esm_token_buffer,
++				       strlen(esm_token_buffer));
++}
++
++static ssize_t esm_token_write(struct file *f, const char __user *buf,
++			       size_t len, loff_t *off)
++{
++	ssize_t ret;
++
++	if (len >= ESM_TOKEN_MAX_SIZE - 1)
++		return -EINVAL;
++
++	ret = simple_write_to_buffer(esm_token_buffer, ESM_TOKEN_MAX_SIZE - 1,
++				     off, buf, len);
++	if (ret >= 0)
++		esm_token_buffer[ret] = '\0';
++
++	return ret;
++}
++
++static const struct proc_ops esm_token_fops = {
++	.proc_read = esm_token_read,
++	.proc_write = esm_token_write,
++	.proc_lseek = default_llseek,
++
++};
++
++static void sunlight_host_cleanup(void)
++{
++	remove_proc_entry(ESM_TOKEN_FILE, proc_dir);
++	proc_remove(proc_dir);
++}
++
++static int __init sunlight_host_init(void)
++{
++	proc_dir = proc_mkdir(PROC_DIR, NULL);
++	if (!proc_dir) {
++		pr_err("Failed to create sunlight-host dir\n");
++		return -ENOMEM;
++	}
++
++	if (!proc_create_data(ESM_TOKEN_FILE, 0644, proc_dir, &esm_token_fops, NULL)) {
++		pr_err("Failed to create esm-token file\n");
++		sunlight_host_cleanup();
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++module_init(sunlight_host_init);
++module_exit(sunlight_host_cleanup);
++MODULE_LICENSE("GPL");
+-- 
+2.35.1
+

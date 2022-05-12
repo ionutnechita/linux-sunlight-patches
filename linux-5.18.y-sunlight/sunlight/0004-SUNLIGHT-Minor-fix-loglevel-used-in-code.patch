@@ -1,0 +1,32 @@
+From fa8195b417a3eee0d0a98d1fa11e8c8f4fb0a3e3 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Mon, 18 Apr 2022 09:26:13 +0300
+Subject: [PATCH 04/52] SUNLIGHT: Minor fix loglevel used in code
+
+Description:
+ - Module:
+   nvme
+
+Bug: N/A
+Change-Id: I3b9a2403ad1109bbf3a595f0e2651dd8646b5fc9
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ drivers/nvme/host/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index e1846d04817f..ac6da01e61a0 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -315,7 +315,7 @@ static void nvme_log_error(struct request *req)
+ 		return;
+ 	}
+ 
+-	pr_err_ratelimited("%s: %s(0x%x), %s (sct 0x%x / sc 0x%x) %s%s\n",
++	pr_warn_ratelimited("%s: %s(0x%x), %s (sct 0x%x / sc 0x%x) %s%s\n",
+ 			   dev_name(nr->ctrl->device),
+ 			   nvme_get_admin_opcode_str(nr->cmd->common.opcode),
+ 			   nr->cmd->common.opcode,
+-- 
+2.35.1
+

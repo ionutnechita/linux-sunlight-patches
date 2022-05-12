@@ -1,0 +1,31 @@
+From 1603a1ea9f13f8b5bdd61ddc1ed12c732e7cbcc9 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Wed, 9 Mar 2022 08:11:34 +0200
+Subject: [PATCH 16/52] SUNLIGHT: Optimize performance compiling for -O3
+
+Description:
+ - Flag added:
+   KBUILD_CFLAGS += $(call cc-option, -fno-tree-loop-vectorize)
+
+Bug: N/A
+Change-Id: I5f855376e6295b82af75e335827fa8d7d07d0fac
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Makefile b/Makefile
+index 7a5a6f7276cd..1b58275f35c5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -779,6 +779,7 @@ ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+ KBUILD_CFLAGS += -O2
+ else ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3
+ KBUILD_CFLAGS += -O3
++KBUILD_CFLAGS += $(call cc-option, -fno-tree-loop-vectorize)
+ else ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
+ KBUILD_CFLAGS += -Os
+ endif
+-- 
+2.35.1
+
