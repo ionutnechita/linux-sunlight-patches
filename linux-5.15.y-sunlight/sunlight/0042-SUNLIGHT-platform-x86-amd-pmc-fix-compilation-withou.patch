@@ -1,0 +1,37 @@
+From 3c7e724b52e9d1c334ae650012b03b708a1d9152 Mon Sep 17 00:00:00 2001
+From: Mario Limonciello <mario.limonciello@amd.com>
+Date: Tue, 26 Oct 2021 12:14:41 -0500
+Subject: [PATCH 42/58] SUNLIGHT: platform/x86: amd-pmc: fix compilation
+ without CONFIG_RTC_SYSTOHC_DEVICE
+
+Description:
+ - If the configuration hasn't specified this parameter the rest of the new
+   RTC functionality should just be ignored.
+
+Bug: N/A
+Change-Id: I0c123e8d195671c772fe0d228ca71344c26f3ca9
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Suggested-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: 59348401ebed ("platform/x86: amd-pmc: Add special handling for timer based S0i3 wakeup")
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/platform/x86/amd-pmc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+index 32ebb1eb2c7c..1bd03f14a702 100644
+--- a/drivers/platform/x86/amd-pmc.c
++++ b/drivers/platform/x86/amd-pmc.c
+@@ -425,7 +425,7 @@ static int amd_pmc_verify_czn_rtc(struct amd_pmc_dev *pdev, u32 *arg)
+ 	if (pdev->major < 64 || (pdev->major == 64 && pdev->minor < 53))
+ 		return 0;
+ 
+-	rtc_device = rtc_class_open(CONFIG_RTC_SYSTOHC_DEVICE);
++	rtc_device = rtc_class_open("rtc0");
+ 	if (!rtc_device)
+ 		return 0;
+ 	rc = rtc_read_alarm(rtc_device, &alarm);
+-- 
+2.35.1
+

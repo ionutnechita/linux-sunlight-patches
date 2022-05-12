@@ -1,0 +1,46 @@
+From 5ba8e1f563ca3d142535a0dc78e9cbc2715f5948 Mon Sep 17 00:00:00 2001
+From: Sanket Goswami <Sanket.Goswami@amd.com>
+Date: Tue, 21 Sep 2021 17:29:10 +0530
+Subject: [PATCH 36/58] SUNLIGHT: platform/x86: amd-pmc: Send command to dump
+ data after clearing OS_HINT
+
+Description:
+ - It was reported that the resume stats received from the firmware are
+   always zero. This happens because the SMU expects the driver to send the
+   command to dump the log data after clearing the OS_HINT.
+ - Adjust the order of the commands sent to SMU.
+
+Bug: N/A
+Change-Id: Icd399479e3b50f2abba31d78888a56ea601ad9ae
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Signed-off-by: Sanket Goswami <Sanket.Goswami@amd.com>
+---
+ drivers/platform/x86/amd-pmc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+index 36f03b48a003..dc789f24103f 100644
+--- a/drivers/platform/x86/amd-pmc.c
++++ b/drivers/platform/x86/amd-pmc.c
+@@ -436,14 +436,14 @@ static int __maybe_unused amd_pmc_resume(struct device *dev)
+ 	int rc;
+ 	u8 msg;
+ 
+-	/* Let SMU know that we are looking for stats */
+-	amd_pmc_send_cmd(pdev, 0, NULL, SMU_MSG_LOG_DUMP_DATA, 0);
+-
+ 	msg = amd_pmc_get_os_hint(pdev);
+ 	rc = amd_pmc_send_cmd(pdev, 0, NULL, msg, 0);
+ 	if (rc)
+ 		dev_err(pdev->dev, "resume failed\n");
+ 
++	/* Let SMU know that we are looking for stats */
++	amd_pmc_send_cmd(pdev, 0, NULL, SMU_MSG_LOG_DUMP_DATA, 0);
++
+ 	/* Dump the IdleMask to see the blockers */
+ 	amd_pmc_idlemask_read(pdev, dev, NULL);
+ 
+-- 
+2.35.1
+

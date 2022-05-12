@@ -1,0 +1,39 @@
+From 9bcee20b57ea1510a29b6acc4d724e9e6612f5da Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 2 Nov 2021 16:32:56 +0100
+Subject: [PATCH 45/58] SUNLIGHT: platform/x86: amd-pmc: Make CONFIG_AMD_PMC
+ depend on RTC_CLASS
+
+Description:
+ - Since the "Add special handling for timer based S0i3 wakeup" changes
+   the amd-pmc code now relies on symbols from the RTC-class code,
+   add a dependency for this to Kconfig.
+
+Bug: N/A
+Change-Id: Ieba5c901dd5f2599284612a4665a861c55bc6e9c
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Fixes: 59348401ebed ("platform/x86: amd-pmc: Add special handling for timer based S0i3 wakeup")
+Cc: Mario Limonciello <mario.limonciello@amd.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/platform/x86/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index e21ea3d23e6f..4cc2782635ec 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -170,7 +170,7 @@ config ACER_WMI
+ 
+ config AMD_PMC
+ 	tristate "AMD SoC PMC driver"
+-	depends on ACPI && PCI
++	depends on ACPI && PCI && RTC_CLASS
+ 	help
+ 	  The driver provides support for AMD Power Management Controller
+ 	  primarily responsible for S2Idle transactions that are driven from
+-- 
+2.35.1
+

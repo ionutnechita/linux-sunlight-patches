@@ -1,0 +1,41 @@
+From 97142f80fdb630a9d000988ea36228af9a5ce4a0 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sun, 13 Mar 2022 13:50:24 +0200
+Subject: [PATCH 18/58] SUNLIGHT: Change default compiler optimization level
+
+Description:
+ - Optimize more for performance (-O3)
+ - Default CC_OPTIMIZE_FOR_PERFORMANCE_O3
+ - Include all platforms
+
+Bug: N/A
+Change-Id: I1f750eadafb98f3d6f68714d978a6bed0dae38d1
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ init/Kconfig | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/init/Kconfig b/init/Kconfig
+index c3fbbbdd6570..f62a839bad03 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1365,7 +1365,7 @@ config BOOT_CONFIG
+ 
+ choice
+ 	prompt "Compiler optimization level"
+-	default CC_OPTIMIZE_FOR_PERFORMANCE
++	default CC_OPTIMIZE_FOR_PERFORMANCE_O3
+ 
+ config CC_OPTIMIZE_FOR_PERFORMANCE
+ 	bool "Optimize for performance (-O2)"
+@@ -1376,7 +1376,6 @@ config CC_OPTIMIZE_FOR_PERFORMANCE
+ 
+ config CC_OPTIMIZE_FOR_PERFORMANCE_O3
+ 	bool "Optimize more for performance (-O3)"
+-	depends on ARC
+ 	help
+ 	  Choosing this option will pass "-O3" to your compiler to optimize
+ 	  the kernel yet more for performance.
+-- 
+2.35.1
+

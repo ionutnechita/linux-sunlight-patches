@@ -1,0 +1,32 @@
+From e686beb68d2cb417e658237f5d2961f3cad6daea Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Tue, 22 Mar 2022 08:08:47 +0200
+Subject: [PATCH 22/58] SUNLIGHT: Updated lowlatency config
+
+Description:
+ - Updated kernel config file:
+   config-sunlight-lowlatency
+
+Bug: N/A
+Change-Id: If8562a98d7e78828d0dee2eba5998c8c7c1124b1
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ sunlight/gcc/config-sunlight-lowlatency | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sunlight/gcc/config-sunlight-lowlatency b/sunlight/gcc/config-sunlight-lowlatency
+index 66cd0dd60725..ca2b50803613 100644
+--- a/sunlight/gcc/config-sunlight-lowlatency
++++ b/sunlight/gcc/config-sunlight-lowlatency
+@@ -10629,7 +10629,7 @@ CONFIG_IMA_TRUSTED_KEYRING=y
+ CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS=y
+ CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS=y
+ # CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT is not set
+-# CONFIG_IMA_DISABLE_HTABLE is not set
++CONFIG_IMA_DISABLE_HTABLE=y
+ CONFIG_EVM=y
+ CONFIG_EVM_ATTR_FSUUID=y
+ CONFIG_EVM_EXTRA_SMACK_XATTRS=y
+-- 
+2.35.1
+

@@ -1,0 +1,54 @@
+From d32a2388bad95f53a8935da739027297326f54f4 Mon Sep 17 00:00:00 2001
+From: Mario Limonciello <mario.limonciello@amd.com>
+Date: Wed, 20 Oct 2021 11:29:45 -0500
+Subject: [PATCH 40/58] SUNLIGHT: platform/x86: amd-pmc: adjust arguments for
+ `amd_pmc_send_cmd`
+
+Description:
+ - Currently the "argument" for the "message" is listed as a boolean
+   value.  This works well for the commands used currently, but an
+   additional upcoming command will pass more data in the message.
+ - Expand it to be a full 32 bit value.
+
+Bug: N/A
+Change-Id: I1dbc5c3c9d5ebd59c35cd0beab47525231a0112f
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/platform/x86/amd-pmc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+index e1802e9cf72a..244f94589b2f 100644
+--- a/drivers/platform/x86/amd-pmc.c
++++ b/drivers/platform/x86/amd-pmc.c
+@@ -126,7 +126,7 @@ struct amd_pmc_dev {
+ };
+ 
+ static struct amd_pmc_dev pmc;
+-static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set, u32 *data, u8 msg, bool ret);
++static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, u32 arg, u32 *data, u8 msg, bool ret);
+ 
+ static inline u32 amd_pmc_reg_read(struct amd_pmc_dev *dev, int reg_offset)
+ {
+@@ -337,7 +337,7 @@ static void amd_pmc_dump_registers(struct amd_pmc_dev *dev)
+ 	dev_dbg(dev->dev, "AMD_PMC_REGISTER_MESSAGE:%x\n", value);
+ }
+ 
+-static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set, u32 *data, u8 msg, bool ret)
++static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, u32 arg, u32 *data, u8 msg, bool ret)
+ {
+ 	int rc;
+ 	u32 val;
+@@ -356,7 +356,7 @@ static int amd_pmc_send_cmd(struct amd_pmc_dev *dev, bool set, u32 *data, u8 msg
+ 	amd_pmc_reg_write(dev, AMD_PMC_REGISTER_RESPONSE, 0);
+ 
+ 	/* Write argument into response register */
+-	amd_pmc_reg_write(dev, AMD_PMC_REGISTER_ARGUMENT, set);
++	amd_pmc_reg_write(dev, AMD_PMC_REGISTER_ARGUMENT, arg);
+ 
+ 	/* Write message ID to message ID register */
+ 	amd_pmc_reg_write(dev, AMD_PMC_REGISTER_MESSAGE, msg);
+-- 
+2.35.1
+

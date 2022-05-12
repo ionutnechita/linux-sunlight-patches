@@ -1,0 +1,35 @@
+From 662b277fc1d6d47a1a1b01316202caa00d44a1e3 Mon Sep 17 00:00:00 2001
+From: Sanket Goswami <Sanket.Goswami@amd.com>
+Date: Tue, 21 Sep 2021 17:30:20 +0530
+Subject: [PATCH 37/58] SUNLIGHT: platform/x86: amd-pmc: Add a message to print
+ resume time info
+
+Description:
+ - Add a message to print the resume time information obtained from the
+   smu_metrics structure.
+
+Bug: N/A
+Change-Id: I6e54a24c7685c5d4de6880eb3a5acb34bc27db1b
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Signed-off-by: Sanket Goswami <Sanket.Goswami@amd.com>
+---
+ drivers/platform/x86/amd-pmc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+index dc789f24103f..08b529887024 100644
+--- a/drivers/platform/x86/amd-pmc.c
++++ b/drivers/platform/x86/amd-pmc.c
+@@ -174,6 +174,8 @@ static int smu_fw_info_show(struct seq_file *s, void *unused)
+ 		   "Unknown/Fail");
+ 	seq_printf(s, "Time (in us) to S0i3: %lld\n", table.timeentering_s0i3_lastcapture);
+ 	seq_printf(s, "Time (in us) in S0i3: %lld\n", table.timein_s0i3_lastcapture);
++	seq_printf(s, "Time (in us) to resume from S0i3: %lld\n",
++		   table.timeto_resume_to_os_lastcapture);
+ 
+ 	seq_puts(s, "\n=== Active time (in us) ===\n");
+ 	for (idx = 0 ; idx < SOC_SUBSYSTEM_IP_MAX ; idx++) {
+-- 
+2.35.1
+

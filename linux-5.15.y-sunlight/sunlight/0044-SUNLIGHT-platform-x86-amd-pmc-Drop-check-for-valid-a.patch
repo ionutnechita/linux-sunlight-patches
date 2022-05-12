@@ -1,0 +1,35 @@
+From 7c8abaa6666eff1e2f6d1bb3968097749fe0c0de Mon Sep 17 00:00:00 2001
+From: Mario Limonciello <mario.limonciello@amd.com>
+Date: Tue, 26 Oct 2021 12:14:43 -0500
+Subject: [PATCH 44/58] SUNLIGHT: platform/x86: amd-pmc: Drop check for valid
+ alarm time
+
+Description:
+ - This is already checked when calling rtc_read_alarm.
+
+Bug: N/A
+Change-Id: Iaa499a0b6759956d809f829814f3c4038f31ab8a
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Suggested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/platform/x86/amd-pmc.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+index ffee7b6b6502..230593ae5d6d 100644
+--- a/drivers/platform/x86/amd-pmc.c
++++ b/drivers/platform/x86/amd-pmc.c
+@@ -435,9 +435,6 @@ static int amd_pmc_verify_czn_rtc(struct amd_pmc_dev *pdev, u32 *arg)
+ 		dev_dbg(pdev->dev, "alarm not enabled\n");
+ 		return 0;
+ 	}
+-	rc = rtc_valid_tm(&alarm.time);
+-	if (rc)
+-		return rc;
+ 	rc = rtc_read_time(rtc_device, &tm);
+ 	if (rc)
+ 		return rc;
+-- 
+2.35.1
+

@@ -1,0 +1,46 @@
+From 2296959e53d11c748793d6af3175dc944a6230e8 Mon Sep 17 00:00:00 2001
+From: Sanket Goswami <Sanket.Goswami@amd.com>
+Date: Thu, 16 Sep 2021 18:11:30 +0530
+Subject: [PATCH 35/58] SUNLIGHT: platform/x86: amd-pmc: Check s0i3 cycle
+ status
+
+Description:
+ - As the PM firmware returns the status of the last s0i3 in the smu_metrics
+   structure, the existing name "s0i3_cyclecount" seems to be a misnomer.
+   Change it accordingly to "s0i3_last_entry_status".
+
+Bug: N/A
+Change-Id: I010c774056980260b3e2d105eec9313d8a6c8af4
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Signed-off-by: Sanket Goswami <Sanket.Goswami@amd.com>
+Acked-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+---
+ drivers/platform/x86/amd-pmc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
+index 98283d8bef94..36f03b48a003 100644
+--- a/drivers/platform/x86/amd-pmc.c
++++ b/drivers/platform/x86/amd-pmc.c
+@@ -141,7 +141,7 @@ static inline void amd_pmc_reg_write(struct amd_pmc_dev *dev, int reg_offset, u3
+ struct smu_metrics {
+ 	u32 table_version;
+ 	u32 hint_count;
+-	u32 s0i3_cyclecount;
++	u32 s0i3_last_entry_status;
+ 	u32 timein_s0i2;
+ 	u64 timeentering_s0i3_lastcapture;
+ 	u64 timeentering_s0i3_totaltime;
+@@ -170,7 +170,8 @@ static int smu_fw_info_show(struct seq_file *s, void *unused)
+ 	seq_puts(s, "\n=== SMU Statistics ===\n");
+ 	seq_printf(s, "Table Version: %d\n", table.table_version);
+ 	seq_printf(s, "Hint Count: %d\n", table.hint_count);
+-	seq_printf(s, "S0i3 Cycle Count: %d\n", table.s0i3_cyclecount);
++	seq_printf(s, "Last S0i3 Status: %s\n", table.s0i3_last_entry_status ? "Success" :
++		   "Unknown/Fail");
+ 	seq_printf(s, "Time (in us) to S0i3: %lld\n", table.timeentering_s0i3_lastcapture);
+ 	seq_printf(s, "Time (in us) in S0i3: %lld\n", table.timein_s0i3_lastcapture);
+ 
+-- 
+2.35.1
+

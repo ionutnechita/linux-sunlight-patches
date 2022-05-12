@@ -1,0 +1,35 @@
+From f4cb571744d3b4f5241fe88013216aa7742a035b Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sat, 23 Apr 2022 12:19:43 +0300
+Subject: [PATCH 58/58] SUNLIGHT: Shiftfs: Set vfs-only exports into their own
+ namespace
+
+Description:
+ - We have namespaces, so use them for all vfs-exported namespaces so that
+   filesystems can use them, but not anything else.
+
+ - Some in-kernel drivers that do direct filesystem accesses (because they
+   serve up files) are also allowed access to these symbols to keep 'make
+   allmodconfig' builds working properly, but it is not needed for Android
+   kernel images.
+
+Change-Id: I11ed28c8445822743257f413fc78655656246bb4
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ fs/shiftfs.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/fs/shiftfs.c b/fs/shiftfs.c
+index a5338dc6290c..5e967a6c2f76 100644
+--- a/fs/shiftfs.c
++++ b/fs/shiftfs.c
+@@ -2190,5 +2190,6 @@ MODULE_AUTHOR("Seth Forshee <seth.forshee@canonical.com>");
+ MODULE_AUTHOR("Christian Brauner <christian.brauner@ubuntu.com>");
+ MODULE_DESCRIPTION("id shifting filesystem");
+ MODULE_LICENSE("GPL v2");
++MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);
+ module_init(shiftfs_init)
+ module_exit(shiftfs_exit)
+-- 
+2.35.1
+

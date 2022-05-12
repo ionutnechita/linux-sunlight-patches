@@ -1,0 +1,50 @@
+From ce0a9878e9c68e006d5a1563dbfa8d3d90fda4bd Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Sat, 4 Dec 2021 15:47:05 +0000
+Subject: [PATCH 01/58] SUNLIGHT: Updated content in OWNERS file
+
+Bug: N/A
+Change-Id: I745c24dcb439dc853a793f8ca0f069b5d9dc4557
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ OWNERS              | 4 ++--
+ android/OWNERS      | 2 +-
+ build.config.common | 1 +
+ 3 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/OWNERS b/OWNERS
+index 2b5ccceaf513..bf42c5e755cb 100644
+--- a/OWNERS
++++ b/OWNERS
+@@ -1,2 +1,2 @@
+-# include OWNERS from the authoritative android-mainline branch
+-include kernel/common:android-mainline:/OWNERS
++# include OWNERS from the authoritative 5.15 branch
++include kernel/common:5.15:/OWNERS
+diff --git a/android/OWNERS b/android/OWNERS
+index 3a9d87457d81..a693f9542a7e 100644
+--- a/android/OWNERS
++++ b/android/OWNERS
+@@ -1,7 +1,7 @@
+ # If we ever add another OWNERS above this directory, it's likely to be
+ # more permissive, so don't inherit from it
+ set noparent
+-include kernel/common:android-mainline:/OWNERS_DrNo
++include kernel/common:5.15:/OWNERS_DrNo
+ 
+ # Downstream boards maintained directly in this manifest branch
+ per-file abi_gki_aarch64_cuttlefish = adelva@google.com, rammuthiah@google.com
+diff --git a/build.config.common b/build.config.common
+index 90a5196cdd59..cdf96727fc55 100644
+--- a/build.config.common
++++ b/build.config.common
+@@ -1,5 +1,6 @@
+ . ${ROOT_DIR}/${KERNEL_DIR}/build.config.constants
+ 
++BRANCH=5.15
+ KMI_GENERATION=5
+ 
+ LLVM=1
+-- 
+2.35.1
+

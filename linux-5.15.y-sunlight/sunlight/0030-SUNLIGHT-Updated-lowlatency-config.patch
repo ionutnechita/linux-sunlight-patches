@@ -1,0 +1,32 @@
+From 614e8e6f59e7c26ee40a7135b276eadd4281ff94 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Thu, 7 Apr 2022 09:57:15 +0300
+Subject: [PATCH 30/58] SUNLIGHT: Updated lowlatency config
+
+Description:
+ - Updated kernel config file:
+   config-sunlight-lowlatency
+
+Bug: N/A
+Change-Id: Ib4bf15c11cb267880225266ecb490dee89e9f023
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ sunlight/gcc/config-sunlight-lowlatency | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sunlight/gcc/config-sunlight-lowlatency b/sunlight/gcc/config-sunlight-lowlatency
+index c86522d5a2f8..89a64a204b0f 100644
+--- a/sunlight/gcc/config-sunlight-lowlatency
++++ b/sunlight/gcc/config-sunlight-lowlatency
+@@ -175,7 +175,7 @@ CONFIG_HAVE_UNSTABLE_SCHED_CLOCK=y
+ # Scheduler features
+ #
+ CONFIG_UCLAMP_TASK=y
+-CONFIG_UCLAMP_BUCKETS_COUNT=5
++CONFIG_UCLAMP_BUCKETS_COUNT=20
+ # end of Scheduler features
+ 
+ CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=y
+-- 
+2.35.1
+

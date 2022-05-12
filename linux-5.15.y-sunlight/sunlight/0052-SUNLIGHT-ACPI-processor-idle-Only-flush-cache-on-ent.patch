@@ -1,0 +1,36 @@
+From 6f480c33319b3383f69ed893e80a4a9ed17bc12b Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Tue, 12 Apr 2022 22:20:59 +0300
+Subject: [PATCH 52/58] SUNLIGHT: ACPI: processor idle: Only flush cache on
+ entering C3
+
+Description:
+ - According to the ACPI spec v6.4, section 8.2, cache flushing required
+on entering C3 power state.
+ - Avoid flushing cache on entering other power states.
+
+Bug: N/A
+Change-Id: Ifa9bd1835457c03c3bda1fc6b6eb2ea1ca21f9f7
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ drivers/acpi/processor_idle.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
+index 1fd6a4a34c15..dc7a2313991b 100644
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -572,7 +572,8 @@ static int acpi_idle_play_dead(struct cpuidle_device *dev, int index)
+ {
+ 	struct acpi_processor_cx *cx = per_cpu(acpi_cstate[index], dev->cpu);
+ 
+-	ACPI_FLUSH_CPU_CACHE();
++	if (cx->type == ACPI_STATE_C3)
++		ACPI_FLUSH_CPU_CACHE();
+ 
+ 	while (1) {
+ 
+-- 
+2.35.1
+

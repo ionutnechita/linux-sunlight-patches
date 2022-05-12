@@ -1,0 +1,29 @@
+From 07955080813f6a1efa70ed9ba3df4d2073dcbe21 Mon Sep 17 00:00:00 2001
+From: Ionut Nechita <ionut_n2001@yahoo.com>
+Date: Wed, 20 Apr 2022 09:23:37 +0300
+Subject: [PATCH 57/58] SUNLIGHT: Minor fix in headers zone - shiftfs
+
+Description:
+ - linux/pagemap.h - filemap_write_and_wait_range
+
+Change-Id: I8745eabc03f2982f641bb8d7579b31b3f1c56471
+Signed-off-by: Ionut Nechita <ionut_n2001@yahoo.com>
+---
+ fs/shiftfs.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/fs/shiftfs.c b/fs/shiftfs.c
+index a21624c529f0..a5338dc6290c 100644
+--- a/fs/shiftfs.c
++++ b/fs/shiftfs.c
+@@ -21,6 +21,7 @@
+ #include <linux/posix_acl_xattr.h>
+ #include <linux/uio.h>
+ #include <linux/fiemap.h>
++#include <linux/pagemap.h>
+ 
+ struct shiftfs_super_info {
+ 	struct vfsmount *mnt;
+-- 
+2.35.1
+
